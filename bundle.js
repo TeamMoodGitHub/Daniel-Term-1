@@ -9,17 +9,16 @@ const app = new Clarifai.App({
 
 // predict the contents of an image by passing in a url
 app.models.predict(Clarifai.GENERAL_MODEL, 'https://samples.clarifai.com/metro-north.jpg').then(
-  getTags = function(response) {
+  function(response) {
     for ( i = 0; i < response.outputs[0].data.concepts.length; i++ ) {
-      return response.outputs[0].data.concepts[i].name;
+      console.log(response.outputs[0].data.concepts[i].name);
     }
   },
+
   function(err) {
     console.error(err);
   }
 );
-
-getTags();
 },{"clarifai":32}],2:[function(require,module,exports){
 "use strict";
 
