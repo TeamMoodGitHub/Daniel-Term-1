@@ -18,3 +18,17 @@ app.models.predict(Clarifai.GENERAL_MODEL, 'https://samples.clarifai.com/metro-n
     console.error(err);
   }
 );
+
+// Search
+app.inputs.create([
+  {url: "https://samples.clarifai.com/metro-north.jpg"},
+  {url: "https://samples.clarifai.com/wedding.jpg"},
+  {base64: "G7p3m95uAl..."}
+]).then(
+  function(response) {
+    console.log(response);
+  },
+  function(err) {
+    console.error(err);
+  }
+);
