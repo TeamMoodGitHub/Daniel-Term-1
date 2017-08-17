@@ -1,3 +1,6 @@
+// Add some jquery
+var $ = require('jquery');
+
 // Require the client
 const Clarifai = require('clarifai');
 
@@ -40,12 +43,14 @@ app.inputs.create([
 );
 
 // Search by concept
-app.inputs.search({ concept: {name: 'cat'} }).then(
+app.inputs.search({ concept: {name: 'people'} }).then(
   function(response) {
 
     for ( i = 0; i < response.hits.length; i++ ) {
       var imageUrl = response.hits[i].input.data.image.url;
       console.log(imageUrl);
+
+      $('<img src="'+imageUrl+'"/>').appendTo($('#image')); // Add image divs to body
     }
 
   },

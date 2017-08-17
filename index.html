@@ -1,9 +1,22 @@
 <html>
   <head>
+    <style>
+      @font-face {
+        font-family: 'Sketch';
+        src: local('HelloEtchASketch.ttf'), url('HelloEtchASketch.ttf') format('truetype');
+      }
+
+      body {
+        font-family: 'Sketch';
+        font-size: 80px;
+      }
+      
+    </style>
   </head>
 
   <body>
     Team Mood
+    <div id="image"></div>
 
     <!-- Scripts -->
     <script type="text/javascript" src="https://sdk.clarifai.com/js/clarifai-latest.js"></script>
