@@ -1,3 +1,6 @@
+// Add some jquery
+var $ = require('jquery');
+
 // Require the client
 const Clarifai = require('clarifai');
 
@@ -7,14 +10,53 @@ const app = new Clarifai.App({
 });
 
 // predict the contents of an image by passing in a url
-app.models.predict(Clarifai.GENERAL_MODEL, 'https://samples.clarifai.com/metro-north.jpg').then(
+app.models.predict(Clarifai.GENERAL_MODEL, 'http://www.lifewithcats.tv/wp-content/uploads/2014/12/23BBF15800000578-0-image-m-45_1417705550165.jpg').then(
   function(response) {
-    for ( i = 0; i < response.outputs[0].data.concepts.length; i++ ) {
-      console.log(response.outputs[0].data.concepts[i].name);
+    var concepts = response.outputs[0].data.concepts;
+
+    for ( i = 0; i < concepts.length; i++ ) {
+      console.log(concepts[i].name);
+      console.log(concepts[i].value);
     }
   },
 
   function(err) {
     console.error(err);
   }
+
+);
+
+// Search index
+app.inputs.create([
+  {url: "https://samples.clarifai.com/metro-north.jpg"},
+  {url: "https://samples.clarifai.com/wedding.jpg"},
+  {url: "http://www.lifewithcats.tv/wp-content/uploads/2014/12/23BBF15800000578-0-image-m-45_1417705550165.jpg"},
+  {url: "http://i.dailymail.co.uk/i/pix/2014/12/12/2400148900000578-2871954-Internet_sensation_The_green_moggy_has_become_hugely_popular_wit-a-41_1418413395813.jpg"},
+  {base64: "G7p3m95uAl..."}
+]).then(
+  function(response) {
+    // do something with response
+  },
+  function(err) {
+    // there was an error
+  }
+);
+
+// Search by concept
+app.inputs.search({ concept: {name: 'people'} }).then(
+  function(response) {
+
+    for ( i = 0; i < response.hits.length; i++ ) {
+      var imageUrl = response.hits[i].input.data.image.url;
+      console.log(imageUrl);
+
+      $('<img src="'+imageUrl+'"/>').appendTo($('#image')); // Add image divs to body
+    }
+
+  },
+
+  function(err) {
+    console.log("Error");
+  }
+
 );
