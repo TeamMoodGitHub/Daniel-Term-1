@@ -5,4 +5,15 @@ body {
   font-family: 'Sketch';
   font-size: 80px; }
 
+.images .concept-name {
+  font-size: 48px; }
+.images .image-block {
+  display: inline-block; }
+  .images .image-block img {
+    display: block;
+    width: 200px; }
+  .images .image-block span {
+    font-size: 18px;
+    text-align: left; }
+
 /*# sourceMappingURL=styles.css.map */

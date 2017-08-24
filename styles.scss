@@ -7,3 +7,20 @@ body {
   font-family: 'Sketch';
   font-size: 80px;
 }
+
+.images {
+  .concept-name { font-size: 48px; }
+
+  .image-block {
+    display: inline-block;
+
+    img {
+      display: block;
+      width: 200px;
+    }
+    span {
+      font-size: 18px;
+      text-align: left;
+    }
+  }
+}
