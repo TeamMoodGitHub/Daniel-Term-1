@@ -66,7 +66,7 @@ app.inputs.search({ concept: {name: conceptName} }).then(
 
     for ( i = 0; i < response.hits.length; i++ ) {
       var imageUrl = response.hits[i].input.data.image.url;
-      var matchScore = response.hits[i].score;
+      var matchScore = Number((response.hits[i].score * 100).toFixed(2));
       console.log(imageUrl);
       console.log(matchScore);
 
@@ -135,7 +135,7 @@ app.inputs.create({
 
 // Create model
 app.models.create(
-  "woelfel-model",
+  "instagrammers",
   [
     { "id": "woelfel" }
   ]
@@ -149,7 +149,7 @@ app.models.create(
 );
 
 // Train model
-app.models.train("woelfel-model").then(
+app.models.train("instagrammers").then(
   function(response) {
     // do something with response
   },
@@ -159,7 +159,7 @@ app.models.train("woelfel-model").then(
 );
 
 // Predict model
-app.models.predict("woelfel-model", ["https://instagram.fsnc1-2.fna.fbcdn.net/t51.2885-15/s750x750/sh0.08/e35/19932854_451879225184716_1913831899474690048_n.jpg"]).then(
+app.models.predict("instagrammers", ["https://instagram.fsnc1-2.fna.fbcdn.net/t51.2885-15/s750x750/sh0.08/e35/19932854_451879225184716_1913831899474690048_n.jpg"]).then(
   function(response) {
     var concepts = response.outputs[0].data.concepts;
 
