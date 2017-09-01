@@ -39,6 +39,7 @@ const app = new Clarifai.App({
 // );
 
 // Search by concept
+/*
 let conceptName = 'urbanxkoi';
 
 app.inputs.search({ concept: {name: conceptName} }).then(
@@ -62,6 +63,7 @@ app.inputs.search({ concept: {name: conceptName} }).then(
   }
 
 );
+*/
 
 // Train
 // Concepts
@@ -111,7 +113,7 @@ function trainConcept( url, concept ) {
 
 // Add concepts
 app.models.initModel("instagrammers").then(function(model) {
-  updateModel,
+  updateModel(),
   function(err) {
     // there was an error
   }
@@ -120,11 +122,10 @@ app.models.initModel("instagrammers").then(function(model) {
 function updateModel(model) {
   model.mergeConcepts({"id": "urbanxkoi"}).then(
     function(response) {
-      console.log(response);
-      console.log("meow");
+      console.log(":)");
     },
     function(err) {
-      // there was an error
+      console.log(":(");
     }
   );
 }
@@ -140,16 +141,16 @@ function updateModel(model) {
 // );
 
 // // Predict model
-app.models.predict("instagrammers", ["https://instagram.fsnc1-2.fna.fbcdn.net/t51.2885-15/e35/20214539_512976105704970_2530443191472095232_n.jpg"]).then(
-  function(response) {
-    var concepts = response.outputs[0].data.concepts;
+// app.models.predict("instagrammers", ["https://instagram.fsnc1-2.fna.fbcdn.net/t51.2885-15/e35/20214539_512976105704970_2530443191472095232_n.jpg"]).then(
+//   function(response) {
+//     var concepts = response.outputs[0].data.concepts;
 
-    for ( i = 0; i < concepts.length; i++ ) {
-      console.log(concepts[i].name);
-      console.log(concepts[i].value * 100);
-    }
-  },
-  function(err) {
-    // there was an error
-  }
-);
+//     for ( i = 0; i < concepts.length; i++ ) {
+//       console.log(concepts[i].name);
+//       console.log(concepts[i].value * 100);
+//     }
+//   },
+//   function(err) {
+//     // there was an error
+//   }
+// );
