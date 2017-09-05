@@ -1,5 +1,7 @@
 // Add some jquery
 var $ = require('jquery');
+// And some instafeed
+var Instafeed = require("instafeed.js");
 
 // Require the client
 const Clarifai = require('clarifai');
@@ -39,7 +41,6 @@ const app = new Clarifai.App({
 // );
 
 // Search by concept
-/*
 let conceptName = 'urbanxkoi';
 
 app.inputs.search({ concept: {name: conceptName} }).then(
@@ -63,7 +64,6 @@ app.inputs.search({ concept: {name: conceptName} }).then(
   }
 
 );
-*/
 
 // Train
 // Concepts
@@ -113,7 +113,7 @@ function trainConcept( url, concept ) {
 
 // Add concepts
 app.models.initModel("instagrammers").then(function(model) {
-  updateModel(),
+  updateModel(model),
   function(err) {
     // there was an error
   }
@@ -154,3 +154,12 @@ function updateModel(model) {
 //     // there was an error
 //   }
 // );
+
+// Instafeed stuff
+var feed = new Instafeed({
+  get: 'tagged',
+  tagName: 'brandonwoelfel',
+  clientId: 'a772fcf4f09941c2b5345cf977403edb'
+});
+
+feed.run();
