@@ -3,9 +3,10 @@
   src: local('HelloEtchASketch.ttf'), url('HelloEtchASketch.ttf') format('truetype');
 }
 
-body {
+h1 {
   font-family: 'Sketch';
   font-size: 80px;
+  font-weight: 400;
 }
 
 .images {
@@ -23,4 +24,8 @@ body {
       text-align: left;
     }
   }
+}
+
+#instafeed {
+  img { width: 200px; }
 }

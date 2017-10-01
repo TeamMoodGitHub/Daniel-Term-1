@@ -1,9 +1,10 @@
 @font-face {
   font-family: 'Sketch';
   src: local("HelloEtchASketch.ttf"), url("HelloEtchASketch.ttf") format("truetype"); }
-body {
+h1 {
   font-family: 'Sketch';
-  font-size: 80px; }
+  font-size: 80px;
+  font-weight: 400; }
 
 .images .concept-name {
   font-size: 48px; }
@@ -15,5 +16,8 @@ body {
   .images .image-block span {
     font-size: 18px;
     text-align: left; }
+
+#instafeed img {
+  width: 200px; }
 
 /*# sourceMappingURL=styles.css.map */

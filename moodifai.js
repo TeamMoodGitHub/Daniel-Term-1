@@ -41,12 +41,12 @@ const app = new Clarifai.App({
 // );
 
 // Search by concept
-let conceptName = 'urbanxkoi';
+let conceptName = 'kolder';
 
 app.inputs.search({ concept: {name: conceptName} }).then(
   function(response) {
 
-    $('<div class="concept-name">'+conceptName+'</div>').appendTo($('.images')); // Add Concept Name
+    $('<div class="concept-name"><h1>'+conceptName+'</h1></div>').appendTo($('.images')); // Add Concept Name
 
     for ( i = 0; i < response.hits.length; i++ ) {
       var imageUrl = response.hits[i].input.data.image.url;
@@ -120,7 +120,7 @@ app.models.initModel("instagrammers").then(function(model) {
 });
 
 function updateModel(model) {
-  model.mergeConcepts({"id": "urbanxkoi"}).then(
+  model.mergeConcepts({"id": "daniellinp"}).then(
     function(response) {
       console.log(":)");
     },
@@ -156,10 +156,73 @@ function updateModel(model) {
 // );
 
 // Instafeed stuff
-var feed = new Instafeed({
-  get: 'tagged',
-  tagName: 'brandonwoelfel',
-  clientId: 'a772fcf4f09941c2b5345cf977403edb'
+// var feed = new Instafeed({
+//   clientId: 'a772fcf4f09941c2b5345cf977403edb',
+//   accessToken: '2579833.a772fcf.4ac1d55cdc024adab07a3f517c17f2cb',
+//   get: 'user',
+//   userId: '2579833', // daniellinp
+//   // userId: '174858319', // UrbanxKoi
+//   // userId: '16659874', // Brandon Woelfel
+//   resolution: 'standard_resolution',
+//   success: function(image) {
+//     for ( i = 0; i < image.data.length; i++ ) {
+//       console.log(image.data[i].images.standard_resolution.url);
+//     }
+//     // trainConcept(image.data[0].images.standard_resolution.url, 'daniellinp')
+
+//     app.inputs.create({
+//       url: image.data[0].images.standard_resolution.url,
+//       concepts: [
+//         {
+//           id: "daniellinp",
+//           value: true
+//         }
+//       ]
+//     }).then(
+//       function(response) {
+//         // do something with response
+//       },
+//       function(err) {
+//         // there was an error
+//       }
+//     );
+
+//   }
+// });
+
+// feed.run();
+
+// Get user input
+var button = document.getElementById("theButton"),
+
+// imageUrl = button.form.valueId.value;
+
+$(document).ready(function() {
+  $('#theButton').click(function() {
+
+    // Define the input URL
+    imageUrl = $('#formValueId').val();
+
+    // Print the input
+    console.log(imageUrl);
+    $('<div>'+imageUrl+'</div>').appendTo($('.output'));
+
+    // Try to run predict on the input
+    app.models.predict("instagrammers", [imageUrl]).then(
+      function(response) {
+        var concepts = response.outputs[0].data.concepts;
+    
+        for ( i = 0; i < concepts.length; i++ ) {
+          console.log(concepts[i].name);
+          console.log(concepts[i].value * 100);
+        }
+      },
+      function(err) {
+        // there was an error
+      }
+    );
+
+  });
 });
 
-feed.run();
+// https://scontent-sjc2-1.cdninstagram.com/t51.2885-15/s750x750/sh0.08/e35/22159398_296986807447180_3520779404873564160_n.jpg
