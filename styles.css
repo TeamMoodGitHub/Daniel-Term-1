@@ -17,6 +17,20 @@ h1 {
     font-size: 18px;
     text-align: left; }
 
+.results-card {
+  width: 1280px;
+  padding: 20px;
+  border: 1px solid #eee;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.25); }
+  .results-card .results-image {
+    width: 50%;
+    display: inline-block; }
+    .results-card .results-image img {
+      width: 100%; }
+  .results-card .results {
+    width: 50%;
+    display: inline-block; }
+
 #instafeed img {
   width: 200px; }
 

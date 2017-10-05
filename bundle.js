@@ -112,24 +112,24 @@ function trainConcept( url, concept ) {
 //   }
 // );
 
-// Add concepts
-app.models.initModel("instagrammers").then(function(model) {
-  updateModel(model),
-  function(err) {
-    // there was an error
-  }
-});
+// // Add concepts
+// app.models.initModel("instagrammers").then(function(model) {
+//   updateModel(model),
+//   function(err) {
+//     // there was an error
+//   }
+// });
 
-function updateModel(model) {
-  model.mergeConcepts({"id": "daniellinp"}).then(
-    function(response) {
-      console.log(":)");
-    },
-    function(err) {
-      console.log(":(");
-    }
-  );
-}
+// function updateModel(model) {
+//   model.mergeConcepts({"id": "daniellinp"}).then(
+//     function(response) {
+//       console.log(":)");
+//     },
+//     function(err) {
+//       console.log(":(");
+//     }
+//   );
+// }
 
 // // Train model
 // app.models.train("instagrammers").then(
@@ -142,8 +142,10 @@ function updateModel(model) {
 // );
 
 // // Predict model
-// app.models.predict("instagrammers", ["https://instagram.fsnc1-2.fna.fbcdn.net/t51.2885-15/e35/20214539_512976105704970_2530443191472095232_n.jpg"]).then(
+// app.model.predict("instagrammers", ["https://samples.clarifai.com/puppy.jpeg"]).then(
 //   function(response) {
+//     console.log(respone);
+
 //     var concepts = response.outputs[0].data.concepts;
 
 //     for ( i = 0; i < concepts.length; i++ ) {
@@ -194,16 +196,42 @@ function updateModel(model) {
 // feed.run();
 
 // Get user input
-var button = document.getElementById("theButton"),
+var button = document.getElementById("theButton");
 
-imageUrl = button.form.valueId.value;
+// imageUrl = button.form.valueId.value;
 
 $(document).ready(function() {
   $('#theButton').click(function() {
-    console.log($('#formValueId').val());
-    $('<div>'+$('#formValueId').val()+'</div>').appendTo($('.output'));
+
+    // Define the input URL
+    imageUrl = $('#formValueId').val();
+
+    // Print the input
+    console.log(imageUrl);
+    $('<div>'+imageUrl+'</div>').appendTo($('.results-card'));
+
+    // Try to run predict on the input
+    app.models.predict("instagrammers", [imageUrl]).then(
+      function(response) {
+        $('<img src="'+imageUrl+'"/>').appendTo($('.results-image'));
+
+        var concepts = response.outputs[0].data.concepts;
+
+        for ( i = 0; i < concepts.length; i++ ) {
+          console.log(concepts[i].name);
+          console.log(concepts[i].value * 100);
+          $('<div class="result-name">'+concepts[i].name+'</div><div class="result-value">'+concepts[i].value * 100+'</div>').appendTo($('.results'));
+        }
+      },
+      function(err) {
+        // there was an error
+      }
+    );
+
   });
 });
+
+// https://scontent-sjc2-1.cdninstagram.com/t51.2885-15/s750x750/sh0.08/e35/22159398_296986807447180_3520779404873564160_n.jpg
 },{"clarifai":32,"instafeed.js":35,"jquery":36}],2:[function(require,module,exports){
 "use strict";
 
