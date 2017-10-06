@@ -2,8 +2,12 @@
   font-family: 'Sketch';
   src: local("HelloEtchASketch.ttf"), url("HelloEtchASketch.ttf") format("truetype"); }
 body {
+  background-color: #f2f2f2; }
+
+h1 {
   font-family: 'Sketch';
-  font-size: 80px; }
+  font-size: 80px;
+  font-weight: 400; }
 
 .images .concept-name {
   font-size: 48px; }
@@ -15,5 +19,44 @@ body {
   .images .image-block span {
     font-size: 18px;
     text-align: left; }
+
+.results-card {
+  width: 800px;
+  margin: 0 auto;
+  background-color: #fff;
+  overflow: hidden;
+  border-radius: 5px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap; }
+  .results-card .results-image, .results-card .results {
+    flex-grow: 1; }
+  .results-card .results-image {
+    width: 50%; }
+    .results-card .results-image img {
+      width: 100%; }
+  .results-card .results {
+    padding: 40px; }
+    .results-card .results .result-name {
+      font-weight: 600; }
+
+.color-palette {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap; }
+  .color-palette .color-tile {
+    padding: 20px;
+    margin: 20px 10px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: 600;
+    color: #fff;
+    flex-grow: 1; }
+
+#instafeed img {
+  width: 200px; }
 
 /*# sourceMappingURL=styles.css.map */
