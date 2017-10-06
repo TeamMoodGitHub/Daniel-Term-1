@@ -207,7 +207,7 @@ $(document).ready(function() {
 
     // Print the input
     console.log(imageUrl);
-    $('<div>'+imageUrl+'</div>').appendTo($('.results-card'));
+    // $('<div>'+imageUrl+'</div>').appendTo($('.results-card'));
 
     // Try to run predict on the input
     app.models.predict("instagrammers", [imageUrl]).then(
@@ -219,7 +219,23 @@ $(document).ready(function() {
         for ( i = 0; i < concepts.length; i++ ) {
           console.log(concepts[i].name);
           console.log(concepts[i].value * 100);
-          $('<div class="result-name">'+concepts[i].name+'</div><div class="result-value">'+concepts[i].value * 100+'</div>').appendTo($('.results'));
+          $('<div class="result"><span class="result-name">'+concepts[i].name+': </span>'+concepts[i].value * 100+'</div>').appendTo($('.results'));
+        }
+      },
+      function(err) {
+        // there was an error
+      }
+    );
+
+    // Predict with colors model too
+    app.models.predict("eeed0b6733a644cea07cf4c60f87ebb7", [imageUrl]).then(
+      function(response) {
+        var colors = response.outputs[0].data.colors;
+
+        for ( i = 0; i < colors.length; i++ ) {
+          console.log(colors[i].raw_hex);
+          console.log(colors[i].value * 100);
+          $('<div class="color-tile" style="background-color:'+colors[i].raw_hex+';">'+colors[i].raw_hex+'</div>').appendTo($('.color-palette'));
         }
       },
       function(err) {
