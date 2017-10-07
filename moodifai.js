@@ -230,12 +230,14 @@ $(document).ready(function() {
     // Predict with colors model too
     app.models.predict("eeed0b6733a644cea07cf4c60f87ebb7", [imageUrl]).then(
       function(response) {
+        console.log(response);
         var colors = response.outputs[0].data.colors;
 
         for ( i = 0; i < colors.length; i++ ) {
-          console.log(colors[i].raw_hex);
-          console.log(colors[i].value * 100);
-          $('<div class="color-tile" style="background-color:'+colors[i].raw_hex+';">'+colors[i].raw_hex+'</div>').appendTo($('.color-palette'));
+          var colorHex = colors[i].w3c.hex;
+          var colorName = colors[i].w3c.name;
+
+          $('<div class="color-tile" style="background-color:'+colorHex+';">'+colorName+': '+colorHex+'</div>').appendTo($('.color-palette'));
         }
       },
       function(err) {
