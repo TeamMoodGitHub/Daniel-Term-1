@@ -66,24 +66,24 @@ const app = new Clarifai.App({
 
 // );
 
-// Train
-// Concepts
-function trainConcept( url, concept ) {
-  app.inputs.create({
-    url: url,
-    concepts: [
-      {
-        id: concept,
-        value: true
-      }
-    ]
-  }).then(
-    function(response) {
-    },
-    function(err) {
-    }
-  )
-};
+// // Train
+// // Concepts
+// function trainConcept( url, concept ) {
+//   app.inputs.create({
+//     url: url,
+//     concepts: [
+//       {
+//         id: concept,
+//         value: true
+//       }
+//     ]
+//   }).then(
+//     function(response) {
+//     },
+//     function(err) {
+//     }
+//   )
+// };
 
 // trainConcept( "https://instagram.fsnc1-2.fna.fbcdn.net/t51.2885-15/e35/20214539_512976105704970_2530443191472095232_n.jpg", "urbanxkoi");
 // trainConcept( "https://instagram.fsnc1-2.fna.fbcdn.net/t51.2885-15/sh0.08/e35/p750x750/19986064_133432720576936_275714815681363968_n.jpg", "kolder");
@@ -250,7 +250,7 @@ $(document).ready(function() {
 });
 
 // https://scontent-sjc2-1.cdninstagram.com/t51.2885-15/s750x750/sh0.08/e35/22159398_296986807447180_3520779404873564160_n.jpg
-},{"clarifai":32,"instafeed.js":35,"jquery":36}],2:[function(require,module,exports){
+},{"clarifai":33,"instafeed.js":36,"jquery":37}],2:[function(require,module,exports){
 "use strict";
 
 // rawAsap provides everything we need except exception management.
@@ -713,7 +713,7 @@ module.exports = function xhrAdapter(resolve, reject, config) {
 };
 
 }).call(this,require('_process'))
-},{"../helpers/settle":18,"./../helpers/btoa":11,"./../helpers/buildURL":12,"./../helpers/cookies":14,"./../helpers/isURLSameOrigin":16,"./../helpers/parseHeaders":17,"./../helpers/transformData":20,"./../utils":21,"_process":45}],6:[function(require,module,exports){
+},{"../helpers/settle":18,"./../helpers/btoa":11,"./../helpers/buildURL":12,"./../helpers/cookies":14,"./../helpers/isURLSameOrigin":16,"./../helpers/parseHeaders":17,"./../helpers/transformData":20,"./../utils":21,"_process":46}],6:[function(require,module,exports){
 'use strict';
 
 var defaults = require('./defaults');
@@ -927,7 +927,7 @@ module.exports = function dispatchRequest(config) {
 
 
 }).call(this,require('_process'))
-},{"../adapters/http":5,"../adapters/xhr":5,"_process":45}],9:[function(require,module,exports){
+},{"../adapters/http":5,"../adapters/xhr":5,"_process":46}],9:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -1649,7 +1649,7 @@ module.exports = {
 };
 
 },{}],22:[function(require,module,exports){
-(function (process){
+(function (process,global){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -1659,7 +1659,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var axios = require('axios');
-var Promise = require('promise');
 
 var _require = require('./helpers'),
     checkType = _require.checkType;
@@ -1671,9 +1670,19 @@ var Workflow = require('./Workflow');
 
 var _require2 = require('./constants'),
     API = _require2.API,
-    ERRORS = _require2.ERRORS;
+    ERRORS = _require2.ERRORS,
+    getBasePath = _require2.getBasePath;
 
 var TOKEN_PATH = API.TOKEN_PATH;
+
+
+if (typeof window !== 'undefined' && !('Promise' in window)) {
+  window.Promise = require('promise');
+}
+
+if (typeof global !== 'undefined' && !('Promise' in global)) {
+  global.Promise = require('promise');
+}
 
 /**
  * top-level class that allows access to models, inputs and concepts
@@ -1743,9 +1752,10 @@ var App = function () {
       var clientId = _ref.clientId,
           clientSecret = _ref.clientSecret,
           token = _ref.token,
-          apiKey = _ref.apiKey;
+          apiKey = _ref.apiKey,
+          sessionToken = _ref.sessionToken;
 
-      if ((!clientId || !clientSecret) && !token && !apiKey) {
+      if ((!clientId || !clientSecret) && !token && !apiKey && !sessionToken) {
         throw ERRORS.paramsRequired(['Client ID', 'Client Secret']);
       }
     }
@@ -1754,11 +1764,14 @@ var App = function () {
     value: function _init(options) {
       var _this = this;
 
+      var apiEndpoint = options.apiEndpoint || process && process.env && process.env.API_ENDPOINT || 'https://api.clarifai.com';
       this._config = {
-        apiEndpoint: options.apiEndpoint || process && process.env && process.env.API_ENDPOINT || 'https://api.clarifai.com',
+        apiEndpoint: apiEndpoint,
         clientId: options.clientId,
         clientSecret: options.clientSecret,
         apiKey: options.apiKey,
+        sessionToken: options.sessionToken,
+        basePath: getBasePath(apiEndpoint, options.userId, options.appId),
         token: function token() {
           return new Promise(function (resolve, reject) {
             var now = new Date().getTime();
@@ -1795,7 +1808,7 @@ var App = function () {
   }, {
     key: '_requestToken',
     value: function _requestToken() {
-      var url = '' + this._config.apiEndpoint + TOKEN_PATH;
+      var url = '' + this._config.basePath + TOKEN_PATH;
       var clientId = this._config.clientId;
       var clientSecret = this._config.clientSecret;
       return axios({
@@ -1815,8 +1828,8 @@ var App = function () {
 ;
 
 module.exports = App;
-}).call(this,require('_process'))
-},{"./Concepts":24,"./Inputs":26,"./Models":28,"./Workflow":29,"./constants":30,"./helpers":31,"_process":45,"axios":4,"promise":37}],23:[function(require,module,exports){
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./Concepts":24,"./Inputs":26,"./Models":29,"./Workflow":30,"./constants":31,"./helpers":32,"_process":46,"axios":4,"promise":38}],23:[function(require,module,exports){
 "use strict";
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1904,7 +1917,7 @@ var Concepts = function () {
 
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { page: 1, perPage: 20 };
 
-      var url = '' + this._config.apiEndpoint + CONCEPTS_PATH;
+      var url = '' + this._config.basePath + CONCEPTS_PATH;
       return wrapToken(this._config, function (headers) {
         return new Promise(function (resolve, reject) {
           axios.get(url, {
@@ -1935,7 +1948,7 @@ var Concepts = function () {
     value: function get(id) {
       var _this3 = this;
 
-      var url = '' + this._config.apiEndpoint + replaceVars(CONCEPT_PATH, [id]);
+      var url = '' + this._config.basePath + replaceVars(CONCEPT_PATH, [id]);
       return wrapToken(this._config, function (headers) {
         return new Promise(function (resolve, reject) {
           axios.get(url, { headers: headers }).then(function (response) {
@@ -1971,7 +1984,7 @@ var Concepts = function () {
       var data = {
         'concepts': concepts.map(formatConcept)
       };
-      var url = '' + this._config.apiEndpoint + CONCEPTS_PATH;
+      var url = '' + this._config.basePath + CONCEPTS_PATH;
       return wrapToken(this._config, function (headers) {
         return new Promise(function (resolve, reject) {
           axios.post(url, data, { headers: headers }).then(function (response) {
@@ -1998,7 +2011,7 @@ var Concepts = function () {
 
       var language = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
-      var url = '' + this._config.apiEndpoint + CONCEPT_SEARCH_PATH;
+      var url = '' + this._config.basePath + CONCEPT_SEARCH_PATH;
       return wrapToken(this._config, function (headers) {
         var params = {
           'concept_query': { name: name, language: language }
@@ -2022,7 +2035,7 @@ var Concepts = function () {
 ;
 
 module.exports = Concepts;
-},{"./Concept":23,"./constants":30,"./helpers":31,"./utils":33,"axios":4}],25:[function(require,module,exports){
+},{"./Concept":23,"./constants":31,"./helpers":32,"./utils":34,"axios":4}],25:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2113,7 +2126,7 @@ var Input = function () {
       var concepts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
       var metadata = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
-      var url = '' + this._config.apiEndpoint + INPUTS_PATH;
+      var url = '' + this._config.basePath + INPUTS_PATH;
       var inputData = {};
       if (concepts.length) {
         inputData.concepts = concepts;
@@ -2148,7 +2161,7 @@ var Input = function () {
 ;
 
 module.exports = Input;
-},{"./Concepts":24,"./constants":30,"axios":4}],26:[function(require,module,exports){
+},{"./Concepts":24,"./constants":31,"axios":4}],26:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2222,7 +2235,7 @@ var Inputs = function () {
 
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { page: 1, perPage: 20 };
 
-      var url = '' + this._config.apiEndpoint + INPUTS_PATH;
+      var url = '' + this._config.basePath + INPUTS_PATH;
       return wrapToken(this._config, function (headers) {
         return new Promise(function (resolve, reject) {
           axios.get(url, {
@@ -2268,7 +2281,7 @@ var Inputs = function () {
       if (checkType(/(String|Object)/, inputs)) {
         inputs = [inputs];
       }
-      var url = '' + this._config.apiEndpoint + INPUTS_PATH;
+      var url = '' + this._config.basePath + INPUTS_PATH;
       if (inputs.length > MAX_BATCH_SIZE) {
         throw ERRORS.MAX_INPUTS;
       }
@@ -2299,7 +2312,7 @@ var Inputs = function () {
     value: function get(id) {
       var _this4 = this;
 
-      var url = '' + this._config.apiEndpoint + replaceVars(INPUT_PATH, [id]);
+      var url = '' + this._config.basePath + replaceVars(INPUT_PATH, [id]);
       return wrapToken(this._config, function (headers) {
         return new Promise(function (resolve, reject) {
           axios.get(url, { headers: headers }).then(function (response) {
@@ -2327,7 +2340,7 @@ var Inputs = function () {
       var val = void 0;
       // delete an input
       if (checkType(/String/, id)) {
-        var url = '' + this._config.apiEndpoint + replaceVars(INPUT_PATH, [id]);
+        var url = '' + this._config.basePath + replaceVars(INPUT_PATH, [id]);
         val = wrapToken(this._config, function (headers) {
           return axios.delete(url, { headers: headers });
         });
@@ -2341,7 +2354,7 @@ var Inputs = function () {
     value: function _deleteInputs() {
       var id = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
-      var url = '' + this._config.apiEndpoint + INPUTS_PATH;
+      var url = '' + this._config.basePath + INPUTS_PATH;
       return wrapToken(this._config, function (headers) {
         var data = id === null ? { delete_all: true } : { ids: id };
         return axios({
@@ -2430,7 +2443,7 @@ var Inputs = function () {
     value: function update(inputs) {
       var _this5 = this;
 
-      var url = '' + this._config.apiEndpoint + INPUTS_PATH;
+      var url = '' + this._config.basePath + INPUTS_PATH;
       var inputsList = Array.isArray(inputs) ? inputs : [inputs];
       if (inputsList.length > MAX_BATCH_SIZE) {
         throw ERRORS.MAX_INPUTS;
@@ -2481,7 +2494,7 @@ var Inputs = function () {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : { page: 1, perPage: 20 };
 
       var formattedAnds = [];
-      var url = '' + this._config.apiEndpoint + SEARCH_PATH;
+      var url = '' + this._config.basePath + SEARCH_PATH;
       var data = {
         query: {
           ands: []
@@ -2528,7 +2541,7 @@ var Inputs = function () {
   }, {
     key: 'getStatus',
     value: function getStatus() {
-      var url = '' + this._config.apiEndpoint + INPUTS_STATUS_PATH;
+      var url = '' + this._config.basePath + INPUTS_STATUS_PATH;
       return wrapToken(this._config, function (headers) {
         return new Promise(function (resolve, reject) {
           axios.get(url, { headers: headers }).then(function (response) {
@@ -2551,7 +2564,7 @@ var Inputs = function () {
 ;
 
 module.exports = Inputs;
-},{"./Input":25,"./constants":30,"./helpers":31,"./utils":33,"axios":4}],27:[function(require,module,exports){
+},{"./Input":25,"./constants":31,"./helpers":32,"./utils":34,"axios":4}],27:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2559,6 +2572,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var axios = require('axios');
+var ModelVersion = require('./ModelVersion');
 
 var _require = require('./helpers'),
     isSuccess = _require.isSuccess,
@@ -2590,7 +2604,8 @@ var MODEL_VERSIONS_PATH = API.MODEL_VERSIONS_PATH,
     VERSION_PREDICT_PATH = API.VERSION_PREDICT_PATH,
     MODEL_INPUTS_PATH = API.MODEL_INPUTS_PATH,
     MODEL_OUTPUT_PATH = API.MODEL_OUTPUT_PATH,
-    MODEL_VERSION_INPUTS_PATH = API.MODEL_VERSION_INPUTS_PATH;
+    MODEL_VERSION_INPUTS_PATH = API.MODEL_VERSION_INPUTS_PATH,
+    MODEL_VERSION_METRICS_PATH = API.MODEL_VERSION_METRICS_PATH;
 
 /**
  * class representing a model
@@ -2611,7 +2626,9 @@ var Model = function () {
       this.modelVersion = {};
       this.versionId = data.version;
     } else {
-      this.modelVersion = data.model_version || data.modelVersion || data.version;
+      if (data.model_version || data.modelVersion || data.version) {
+        this.modelVersion = new ModelVersion(this._config, data.model_version || data.modelVersion || data.version);
+      }
       this.versionId = (this.modelVersion || {}).id;
     }
     this.rawData = data;
@@ -2664,6 +2681,30 @@ var Model = function () {
     }
 
     /**
+     * Start a model evaluation job
+     * @return {Promise(ModelVersion, error)} A Promise that is fulfilled with a ModelVersion instance or rejected with an error
+     */
+
+  }, {
+    key: 'runModelEval',
+    value: function runModelEval() {
+      var _this = this;
+
+      var url = '' + this._config.basePath + replaceVars(MODEL_VERSION_METRICS_PATH, [this.id, this.versionId]);
+      return wrapToken(this._config, function (headers) {
+        return new Promise(function (resolve, reject) {
+          axios.post(url, {}, { headers: headers }).then(function (response) {
+            if (isSuccess(response)) {
+              resolve(new ModelVersion(_this._config, response.data.model_version));
+            } else {
+              reject(response);
+            }
+          }, reject);
+        });
+      });
+    }
+
+    /**
      * Update a model's output config or concepts
      * @param {object}               model                                 An object with any of the following attrs:
      *   @param {string}               name                                  The new name of the model to update with
@@ -2679,12 +2720,12 @@ var Model = function () {
   }, {
     key: 'update',
     value: function update(obj) {
-      var _this = this;
+      var _this2 = this;
 
-      var url = '' + this._config.apiEndpoint + MODELS_PATH;
+      var url = '' + this._config.basePath + MODELS_PATH;
       var modelData = [obj];
       var data = { models: modelData.map(function (m) {
-          return formatModel(Object.assign(m, { id: _this.id }));
+          return formatModel(Object.assign(m, { id: _this2.id }));
         }) };
       if (Array.isArray(obj.concepts)) {
         data['action'] = obj.action || 'merge';
@@ -2694,7 +2735,7 @@ var Model = function () {
         return new Promise(function (resolve, reject) {
           axios.patch(url, data, { headers: headers }).then(function (response) {
             if (isSuccess(response)) {
-              resolve(new Model(_this._config, response.data.models[0]));
+              resolve(new Model(_this2._config, response.data.models[0]));
             } else {
               reject(response);
             }
@@ -2712,18 +2753,18 @@ var Model = function () {
   }, {
     key: 'train',
     value: function train(sync) {
-      var _this2 = this;
+      var _this3 = this;
 
-      var url = '' + this._config.apiEndpoint + replaceVars(MODEL_VERSIONS_PATH, [this.id]);
+      var url = '' + this._config.basePath + replaceVars(MODEL_VERSIONS_PATH, [this.id]);
       return wrapToken(this._config, function (headers) {
         return new Promise(function (resolve, reject) {
           axios.post(url, null, { headers: headers }).then(function (response) {
             if (isSuccess(response)) {
               if (sync) {
                 var timeStart = Date.now();
-                _this2._pollTrain.bind(_this2)(timeStart, resolve, reject);
+                _this3._pollTrain.bind(_this3)(timeStart, resolve, reject);
               } else {
-                resolve(new Model(_this2._config, response.data.model));
+                resolve(new Model(_this3._config, response.data.model));
               }
             } else {
               reject(response);
@@ -2735,7 +2776,7 @@ var Model = function () {
   }, {
     key: '_pollTrain',
     value: function _pollTrain(timeStart, resolve, reject) {
-      var _this3 = this;
+      var _this4 = this;
 
       clearTimeout(this.pollTimeout);
       if (Date.now() - timeStart >= SYNC_TIMEOUT) {
@@ -2747,8 +2788,8 @@ var Model = function () {
       this.getOutputInfo().then(function (model) {
         var modelStatusCode = model.modelVersion.status.code.toString();
         if (modelStatusCode === MODEL_QUEUED_FOR_TRAINING || modelStatusCode === MODEL_TRAINING) {
-          _this3.pollTimeout = setTimeout(function () {
-            return _this3._pollTrain(timeStart, resolve, reject);
+          _this4.pollTimeout = setTimeout(function () {
+            return _this4._pollTrain(timeStart, resolve, reject);
           }, POLLTIME);
         } else {
           resolve(model);
@@ -2794,7 +2835,7 @@ var Model = function () {
       if (checkType(/(Object|String)/, inputs)) {
         inputs = [inputs];
       }
-      var url = '' + this._config.apiEndpoint + (this.versionId ? replaceVars(VERSION_PREDICT_PATH, [this.id, this.versionId]) : replaceVars(PREDICT_PATH, [this.id]));
+      var url = '' + this._config.basePath + (this.versionId ? replaceVars(VERSION_PREDICT_PATH, [this.id, this.versionId]) : replaceVars(PREDICT_PATH, [this.id]));
       return wrapToken(this._config, function (headers) {
         var params = { inputs: inputs.map(function (input) {
             return formatMediaPredict(input, video ? 'video' : 'image');
@@ -2825,7 +2866,7 @@ var Model = function () {
   }, {
     key: 'getVersion',
     value: function getVersion(versionId) {
-      var url = '' + this._config.apiEndpoint + replaceVars(MODEL_VERSION_PATH, [this.id, versionId]);
+      var url = '' + this._config.basePath + replaceVars(MODEL_VERSION_PATH, [this.id, versionId]);
       return wrapToken(this._config, function (headers) {
         return new Promise(function (resolve, reject) {
           axios.get(url, { headers: headers }).then(function (response) {
@@ -2850,7 +2891,7 @@ var Model = function () {
     value: function getVersions() {
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { page: 1, perPage: 20 };
 
-      var url = '' + this._config.apiEndpoint + replaceVars(MODEL_VERSIONS_PATH, [this.id]);
+      var url = '' + this._config.basePath + replaceVars(MODEL_VERSIONS_PATH, [this.id]);
       return wrapToken(this._config, function (headers) {
         var data = {
           headers: headers,
@@ -2874,13 +2915,13 @@ var Model = function () {
   }, {
     key: 'getOutputInfo',
     value: function getOutputInfo() {
-      var _this4 = this;
+      var _this5 = this;
 
-      var url = '' + this._config.apiEndpoint + replaceVars(MODEL_OUTPUT_PATH, [this.id]);
+      var url = '' + this._config.basePath + replaceVars(MODEL_OUTPUT_PATH, [this.id]);
       return wrapToken(this._config, function (headers) {
         return new Promise(function (resolve, reject) {
           axios.get(url, { headers: headers }).then(function (response) {
-            resolve(new Model(_this4._config, response.data.model));
+            resolve(new Model(_this5._config, response.data.model));
           }, reject);
         });
       });
@@ -2899,7 +2940,7 @@ var Model = function () {
     value: function getInputs() {
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { page: 1, perPage: 20 };
 
-      var url = '' + this._config.apiEndpoint + (this.versionId ? replaceVars(MODEL_VERSION_INPUTS_PATH, [this.id, this.versionId]) : replaceVars(MODEL_INPUTS_PATH, [this.id]));
+      var url = '' + this._config.basePath + (this.versionId ? replaceVars(MODEL_VERSION_INPUTS_PATH, [this.id, this.versionId]) : replaceVars(MODEL_INPUTS_PATH, [this.id]));
       return wrapToken(this._config, function (headers) {
         return new Promise(function (resolve, reject) {
           axios.get(url, {
@@ -2931,7 +2972,7 @@ var Model = function () {
           data = _ref.data,
           info = _ref.info;
 
-      var url = '' + this._config.apiEndpoint + (this.versionId ? replaceVars(MODEL_VERSION_FEEDBACK_PATH, [this.id, this.versionId]) : replaceVars(MODEL_FEEDBACK_PATH, [this.id]));
+      var url = '' + this._config.basePath + (this.versionId ? replaceVars(MODEL_VERSION_FEEDBACK_PATH, [this.id, this.versionId]) : replaceVars(MODEL_FEEDBACK_PATH, [this.id]));
       var media = formatMediaPredict(input).data;
       info.eventType = 'annotation';
       var body = {
@@ -2961,7 +3002,31 @@ var Model = function () {
 }();
 
 module.exports = Model;
-},{"./constants":30,"./helpers":31,"./utils":33,"axios":4}],28:[function(require,module,exports){
+},{"./ModelVersion":28,"./constants":31,"./helpers":32,"./utils":34,"axios":4}],28:[function(require,module,exports){
+"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * class representing a version of a model
+ * @class
+ */
+var ModelVersion = function ModelVersion(_config, data) {
+  _classCallCheck(this, ModelVersion);
+
+  this.id = data.id;
+  this.created_at = this.createdAt = data.created_at || data.createdAt;
+  this.status = data.status;
+  this.active_concept_count = data.active_concept_count;
+  this.metrics = data.metrics;
+  this._config = _config;
+  this.rawData = data;
+};
+
+;
+
+module.exports = ModelVersion;
+},{}],29:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3236,7 +3301,7 @@ var Models = function () {
 
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { page: 1, perPage: 20 };
 
-      var url = '' + this._config.apiEndpoint + MODELS_PATH;
+      var url = '' + this._config.basePath + MODELS_PATH;
       return wrapToken(this._config, function (headers) {
         return new Promise(function (resolve, reject) {
           axios.get(url, {
@@ -3287,7 +3352,7 @@ var Models = function () {
       if (modelObj.id === undefined) {
         throw ERRORS.paramsRequired('Model ID');
       }
-      var url = '' + this._config.apiEndpoint + MODELS_PATH;
+      var url = '' + this._config.basePath + MODELS_PATH;
       var data = { model: modelObj };
       data['model']['output_info'] = {
         'data': {
@@ -3323,7 +3388,7 @@ var Models = function () {
     value: function get(id) {
       var _this11 = this;
 
-      var url = '' + this._config.apiEndpoint + replaceVars(MODEL_PATH, [id]);
+      var url = '' + this._config.basePath + replaceVars(MODEL_PATH, [id]);
       return wrapToken(this._config, function (headers) {
         return new Promise(function (resolve, reject) {
           axios.get(url, { headers: headers }).then(function (response) {
@@ -3356,7 +3421,7 @@ var Models = function () {
     value: function update(models) {
       var _this12 = this;
 
-      var url = '' + this._config.apiEndpoint + MODELS_PATH;
+      var url = '' + this._config.basePath + MODELS_PATH;
       var modelsList = Array.isArray(models) ? models : [models];
       var data = { models: modelsList.map(formatModel) };
       data['action'] = models.action || 'merge';
@@ -3446,9 +3511,9 @@ var Models = function () {
 
       if (checkType(/String/, ids) || checkType(/Array/, ids) && ids.length === 1) {
         if (versionId) {
-          url = '' + this._config.apiEndpoint + replaceVars(MODEL_VERSION_PATH, [id, versionId]);
+          url = '' + this._config.basePath + replaceVars(MODEL_VERSION_PATH, [id, versionId]);
         } else {
-          url = '' + this._config.apiEndpoint + replaceVars(MODEL_PATH, [id]);
+          url = '' + this._config.basePath + replaceVars(MODEL_PATH, [id]);
         }
         request = wrapToken(this._config, function (headers) {
           return new Promise(function (resolve, reject) {
@@ -3461,10 +3526,10 @@ var Models = function () {
         });
       } else {
         if (!ids && !versionId) {
-          url = '' + this._config.apiEndpoint + MODELS_PATH;
+          url = '' + this._config.basePath + MODELS_PATH;
           data = { 'delete_all': true };
         } else if (!versionId && ids.length > 1) {
-          url = '' + this._config.apiEndpoint + MODELS_PATH;
+          url = '' + this._config.basePath + MODELS_PATH;
           data = { ids: ids };
         } else {
           throw ERRORS.INVALID_DELETE_ARGS;
@@ -3502,7 +3567,7 @@ var Models = function () {
 
       var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
-      var url = '' + this._config.apiEndpoint + MODEL_SEARCH_PATH;
+      var url = '' + this._config.basePath + MODEL_SEARCH_PATH;
       return wrapToken(this._config, function (headers) {
         var params = {
           'model_query': {
@@ -3527,7 +3592,7 @@ var Models = function () {
 }();
 
 module.exports = Models;
-},{"./Concepts":24,"./Model":27,"./constants":30,"./helpers":31,"./utils":33,"axios":4,"promise":37}],29:[function(require,module,exports){
+},{"./Concepts":24,"./Model":27,"./constants":31,"./helpers":32,"./utils":34,"axios":4,"promise":38}],30:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3540,8 +3605,9 @@ var _require = require('./constants'),
     API = _require.API,
     replaceVars = _require.replaceVars;
 
-var WORKFLOW_PATH = API.WORKFLOW_PATH,
-    CREATE_WORKFLOW_PATH = API.CREATE_WORKFLOW_PATH;
+var WORKFLOWS_PATH = API.WORKFLOWS_PATH,
+    WORKFLOW_PATH = API.WORKFLOW_PATH,
+    WORKFLOW_RESULTS_PATH = API.WORKFLOW_RESULTS_PATH;
 
 var _require2 = require('./utils'),
     wrapToken = _require2.wrapToken,
@@ -3568,13 +3634,13 @@ var Workflow = function () {
 
   _createClass(Workflow, [{
     key: 'create',
-    value: function create(name, config) {
-      var url = '' + this._config.apiEndpoint + CREATE_WORKFLOW_PATH;
+    value: function create(workflowId, config) {
+      var url = '' + this._config.basePath + WORKFLOWS_PATH;
       var modelId = config.modelId;
       var modelVersionId = config.modelVersionId;
       var body = {
         workflows: [{
-          id: name,
+          id: workflowId,
           nodes: [{
             id: 'concepts',
             model: {
@@ -3598,6 +3664,21 @@ var Workflow = function () {
         });
       });
     }
+  }, {
+    key: 'delete',
+    value: function _delete(workflowId, config) {
+      var url = '' + this._config.basePath + replaceVars(WORKFLOW_PATH, [workflowId]);
+      return wrapToken(this._config, function (headers) {
+        return new Promise(function (resolve, reject) {
+          axios.delete(url, {
+            headers: headers
+          }).then(function (response) {
+            var data = response.data;
+            resolve(data);
+          }, reject);
+        });
+      });
+    }
 
     /**
      * Returns workflow output according to inputs
@@ -3610,7 +3691,7 @@ var Workflow = function () {
   }, {
     key: 'predict',
     value: function predict(workflowId, inputs) {
-      var url = '' + this._config.apiEndpoint + replaceVars(WORKFLOW_PATH, [workflowId]);
+      var url = '' + this._config.basePath + replaceVars(WORKFLOW_RESULTS_PATH, [workflowId]);
       if (checkType(/(Object|String)/, inputs)) {
         inputs = [inputs];
       }
@@ -3634,42 +3715,44 @@ var Workflow = function () {
 }();
 
 module.exports = Workflow;
-},{"./constants":30,"./helpers":31,"./utils":33,"axios":4}],30:[function(require,module,exports){
+},{"./constants":31,"./helpers":32,"./utils":34,"axios":4}],31:[function(require,module,exports){
 'use strict';
 
 var MAX_BATCH_SIZE = 128;
 var GEO_LIMIT_TYPES = ['withinMiles', 'withinKilometers', 'withinRadians', 'withinDegrees'];
 var URL_REGEX = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/i;
-var SYNC_TIMEOUT = 60000;
+var SYNC_TIMEOUT = 240000;
 var MODEL_QUEUED_FOR_TRAINING = '21103';
 var MODEL_TRAINING = '21101';
 var POLLTIME = 2000;
 
 module.exports = {
   API: {
-    TOKEN_PATH: '/v2/token',
-    MODELS_PATH: '/v2/models',
-    MODEL_PATH: '/v2/models/$0',
-    MODEL_VERSIONS_PATH: '/v2/models/$0/versions',
-    MODEL_VERSION_PATH: '/v2/models/$0/versions/$1',
-    MODEL_PATCH_PATH: '/v2/models/$0/output_info/data/concepts',
-    MODEL_OUTPUT_PATH: '/v2/models/$0/output_info',
-    MODEL_SEARCH_PATH: '/v2/models/searches',
-    MODEL_FEEDBACK_PATH: '/v2/models/$0/feedback',
-    MODEL_VERSION_FEEDBACK_PATH: '/v2/models/$0/versions/$1/feedback',
-    PREDICT_PATH: '/v2/models/$0/outputs',
-    VERSION_PREDICT_PATH: '/v2/models/$0/versions/$1/outputs',
-    CONCEPTS_PATH: '/v2/concepts',
-    CONCEPT_PATH: '/v2/concepts/$0',
-    CONCEPT_SEARCH_PATH: '/v2/concepts/searches',
-    MODEL_INPUTS_PATH: '/v2/models/$0/inputs',
-    MODEL_VERSION_INPUTS_PATH: '/v2/models/$0/versions/$1/inputs',
-    INPUTS_PATH: '/v2/inputs',
-    INPUT_PATH: '/v2/inputs/$0',
-    INPUTS_STATUS_PATH: '/v2/inputs/status',
-    SEARCH_PATH: '/v2/searches',
-    WORKFLOW_PATH: '/v2/workflows/$0/results',
-    CREATE_WORKFLOW_PATH: '/v2/workflows'
+    TOKEN_PATH: '/token',
+    MODELS_PATH: '/models',
+    MODEL_PATH: '/models/$0',
+    MODEL_VERSIONS_PATH: '/models/$0/versions',
+    MODEL_VERSION_PATH: '/models/$0/versions/$1',
+    MODEL_PATCH_PATH: '/models/$0/output_info/data/concepts',
+    MODEL_OUTPUT_PATH: '/models/$0/output_info',
+    MODEL_SEARCH_PATH: '/models/searches',
+    MODEL_FEEDBACK_PATH: '/models/$0/feedback',
+    MODEL_VERSION_FEEDBACK_PATH: '/models/$0/versions/$1/feedback',
+    PREDICT_PATH: '/models/$0/outputs',
+    VERSION_PREDICT_PATH: '/models/$0/versions/$1/outputs',
+    CONCEPTS_PATH: '/concepts',
+    CONCEPT_PATH: '/concepts/$0',
+    CONCEPT_SEARCH_PATH: '/concepts/searches',
+    MODEL_INPUTS_PATH: '/models/$0/inputs',
+    MODEL_VERSION_INPUTS_PATH: '/models/$0/versions/$1/inputs',
+    MODEL_VERSION_METRICS_PATH: '/models/$0/versions/$1/metrics',
+    INPUTS_PATH: '/inputs',
+    INPUT_PATH: '/inputs/$0',
+    INPUTS_STATUS_PATH: '/inputs/status',
+    SEARCH_PATH: '/searches',
+    WORKFLOWS_PATH: '/workflows',
+    WORKFLOW_PATH: '/workflows/$0',
+    WORKFLOW_RESULTS_PATH: '/workflows/$0/results'
   },
   ERRORS: {
     paramsRequired: function paramsRequired(param) {
@@ -3697,13 +3780,23 @@ module.exports = {
     });
     return newPath;
   },
+  getBasePath: function getBasePath() {
+    var apiEndpoint = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'https://api.clarifai.com';
+    var userId = arguments[1];
+    var appId = arguments[2];
+
+    if (!userId || !appId) {
+      return apiEndpoint + '/v2';
+    }
+    return apiEndpoint + '/v2/users/' + userId + '/apps/' + appId;
+  },
   GEO_LIMIT_TYPES: GEO_LIMIT_TYPES,
   MAX_BATCH_SIZE: MAX_BATCH_SIZE,
   URL_REGEX: URL_REGEX,
   SYNC_TIMEOUT: SYNC_TIMEOUT,
   POLLTIME: POLLTIME
 };
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 var SUCCESS_CODES = [200, 201];
@@ -3736,7 +3829,7 @@ module.exports = {
     return regex.test(Object.prototype.toString.call(val));
   }
 };
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -3762,10 +3855,11 @@ module.exports = global.Clarifai = {
   DEMOGRAPHICS_MODEL: 'c0c0ac362b03416da06ab3fa36fb58e3',
   GENERAL_EMBED_MODEL: 'bbb5f41425b8468d9b7a554ff10f8581',
   FACE_EMBED_MODEL: 'd02b4508df58432fbb84e800597b8959',
-  APPAREL_MODEL: 'e0be3b9d6a454f0493ac3a30784001ff'
+  APPAREL_MODEL: 'e0be3b9d6a454f0493ac3a30784001ff',
+  MODERATION_MODEL: 'd16f390eb32cad478c7ae150069bd2c6'
 };
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./../package.json":34,"./App":22}],33:[function(require,module,exports){
+},{"./../package.json":35,"./App":22}],34:[function(require,module,exports){
 'use strict';
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -3793,6 +3887,13 @@ module.exports = {
           'X-Clarifai-Client': 'js:' + VERSION
         };
         return requestFn(headers).then(resolve, reject);
+      }
+      if (_config.sessionToken) {
+        var _headers = {
+          'X-Clarifai-Session-Token': _config.sessionToken,
+          'X-Clarifai-Client': 'js:' + VERSION
+        };
+        return requestFn(_headers).then(resolve, reject);
       }
       _config.token().then(function (token) {
         var headers = {
@@ -3860,9 +3961,9 @@ module.exports = {
   formatMediaPredict: function formatMediaPredict(data) {
     var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'image';
 
-    var media = data;
+    var media = void 0;
     if (checkType(/String/, data)) {
-      if (URL_REGEX.test(media) === true) {
+      if (URL_REGEX.test(data) === true) {
         media = {
           url: data
         };
@@ -3871,10 +3972,26 @@ module.exports = {
           base64: data
         };
       }
+    } else {
+      media = Object.assign({}, data);
     }
-    return {
+
+    // Users can specify their own id to distinguish batch results
+    var id = void 0;
+    if (media.id) {
+      id = media.id;
+      delete media.id;
+    }
+
+    var object = {
       data: _defineProperty({}, type, media)
     };
+
+    if (id) {
+      object.id = id;
+    }
+
+    return object;
   },
   formatImagesSearch: function formatImagesSearch(image) {
     var imageQuery = void 0;
@@ -3896,6 +4013,9 @@ module.exports = {
     if (image.id) {
       input.input.id = image.id;
       input.input.data = { image: {} };
+      if (image.crop) {
+        input.input.data.image.crop = image.crop;
+      }
     }
     if (image.metadata !== undefined) {
       input.input.data.metadata = image.metadata;
@@ -3970,66 +4090,45 @@ module.exports = {
     }, {});
   }
 };
-},{"./../package.json":34,"./constants":30,"./helpers":31,"promise":37}],34:[function(require,module,exports){
+},{"./../package.json":35,"./constants":31,"./helpers":32,"promise":38}],35:[function(require,module,exports){
 module.exports={
-  "_args": [
-    [
-      {
-        "raw": "clarifai",
-        "scope": null,
-        "escapedName": "clarifai",
-        "name": "clarifai",
-        "rawSpec": "",
-        "spec": "latest",
-        "type": "tag"
-      },
-      "/Users/Chum"
-    ]
-  ],
-  "_from": "clarifai@latest",
-  "_id": "clarifai@2.2.0",
-  "_inCache": true,
-  "_installable": true,
+  "_from": "clarifai",
+  "_id": "clarifai@2.4.0",
+  "_inBundle": false,
+  "_integrity": "sha1-a0Wq/8ikBYg6s+cp6ZU5UHxLO5E=",
   "_location": "/clarifai",
-  "_nodeVersion": "6.11.0",
-  "_npmOperationalInternal": {
-    "host": "s3://npm-registry-packages",
-    "tmp": "tmp/clarifai-2.2.0.tgz_1498165122459_0.7238537282682955"
-  },
-  "_npmUser": {
-    "name": "dankantor-clarifai",
-    "email": "dankantor@clarifai.com"
-  },
-  "_npmVersion": "3.10.10",
   "_phantomChildren": {},
   "_requested": {
+    "type": "tag",
+    "registry": true,
     "raw": "clarifai",
-    "scope": null,
-    "escapedName": "clarifai",
     "name": "clarifai",
+    "escapedName": "clarifai",
     "rawSpec": "",
-    "spec": "latest",
-    "type": "tag"
+    "saveSpec": null,
+    "fetchSpec": "latest"
   },
   "_requiredBy": [
-    "#USER"
+    "#USER",
+    "/"
   ],
-  "_resolved": "https://registry.npmjs.org/clarifai/-/clarifai-2.2.0.tgz",
-  "_shasum": "d0161e3a075b07ebf786008ba36044e6df0d28a5",
-  "_shrinkwrap": null,
+  "_resolved": "https://registry.npmjs.org/clarifai/-/clarifai-2.4.0.tgz",
+  "_shasum": "6b45aaffc8a405883ab3e729e99539507c4b3b91",
   "_spec": "clarifai",
-  "_where": "/Users/Chum",
+  "_where": "/Users/Chum/Chum/Dropbox (Personal)/Mood/Moodifai",
   "author": {
     "name": "Clarifai Inc."
   },
   "bugs": {
     "url": "https://github.com/Clarifai/clarifai-javascript/issues"
   },
+  "bundleDependencies": false,
   "dependencies": {
     "axios": "0.11.1",
     "form-data": "0.2.0",
     "promise": "7.1.1"
   },
+  "deprecated": false,
   "description": "Official Clarifai Javascript SDK",
   "devDependencies": {
     "babel-eslint": "^6.1.2",
@@ -4059,28 +4158,10 @@ module.exports={
     "require-dir": "0.3.0",
     "serve-static": "1.10.0"
   },
-  "directories": {},
-  "dist": {
-    "shasum": "d0161e3a075b07ebf786008ba36044e6df0d28a5",
-    "tarball": "https://registry.npmjs.org/clarifai/-/clarifai-2.2.0.tgz"
-  },
-  "gitHead": "3aabe3ecae9c17ac088488c03a0983057d51c58b",
   "homepage": "https://github.com/Clarifai/clarifai-javascript#readme",
   "license": "Apache-2.0",
   "main": "dist/index.js",
-  "maintainers": [
-    {
-      "name": "clarifai-jade",
-      "email": "jade@clarifai.com"
-    },
-    {
-      "name": "dankantor-clarifai",
-      "email": "dankantor@clarifai.com"
-    }
-  ],
   "name": "clarifai",
-  "optionalDependencies": {},
-  "readme": "ERROR: No README data found!",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Clarifai/clarifai-javascript.git"
@@ -4093,10 +4174,10 @@ module.exports={
     "test": "gulp test",
     "watch": "gulp watch"
   },
-  "version": "2.2.0"
+  "version": "2.4.0"
 }
 
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 // Generated by CoffeeScript 1.9.3
 (function() {
   var Instafeed;
@@ -4469,7 +4550,7 @@ module.exports={
 
 }).call(this);
 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v3.2.1
  * https://jquery.com/
@@ -14724,12 +14805,12 @@ if ( !noGlobal ) {
 return jQuery;
 } );
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 module.exports = require('./lib')
 
-},{"./lib":42}],38:[function(require,module,exports){
+},{"./lib":43}],39:[function(require,module,exports){
 'use strict';
 
 var asap = require('asap/raw');
@@ -14944,7 +15025,7 @@ function doResolve(fn, promise) {
   }
 }
 
-},{"asap/raw":3}],39:[function(require,module,exports){
+},{"asap/raw":3}],40:[function(require,module,exports){
 'use strict';
 
 var Promise = require('./core.js');
@@ -14959,7 +15040,7 @@ Promise.prototype.done = function (onFulfilled, onRejected) {
   });
 };
 
-},{"./core.js":38}],40:[function(require,module,exports){
+},{"./core.js":39}],41:[function(require,module,exports){
 'use strict';
 
 //This file contains the ES6 extensions to the core Promises/A+ API
@@ -15068,7 +15149,7 @@ Promise.prototype['catch'] = function (onRejected) {
   return this.then(null, onRejected);
 };
 
-},{"./core.js":38}],41:[function(require,module,exports){
+},{"./core.js":39}],42:[function(require,module,exports){
 'use strict';
 
 var Promise = require('./core.js');
@@ -15086,7 +15167,7 @@ Promise.prototype['finally'] = function (f) {
   });
 };
 
-},{"./core.js":38}],42:[function(require,module,exports){
+},{"./core.js":39}],43:[function(require,module,exports){
 'use strict';
 
 module.exports = require('./core.js');
@@ -15096,7 +15177,7 @@ require('./es6-extensions.js');
 require('./node-extensions.js');
 require('./synchronous.js');
 
-},{"./core.js":38,"./done.js":39,"./es6-extensions.js":40,"./finally.js":41,"./node-extensions.js":43,"./synchronous.js":44}],43:[function(require,module,exports){
+},{"./core.js":39,"./done.js":40,"./es6-extensions.js":41,"./finally.js":42,"./node-extensions.js":44,"./synchronous.js":45}],44:[function(require,module,exports){
 'use strict';
 
 // This file contains then/promise specific extensions that are only useful
@@ -15228,7 +15309,7 @@ Promise.prototype.nodeify = function (callback, ctx) {
   });
 }
 
-},{"./core.js":38,"asap":2}],44:[function(require,module,exports){
+},{"./core.js":39,"asap":2}],45:[function(require,module,exports){
 'use strict';
 
 var Promise = require('./core.js');
@@ -15292,7 +15373,7 @@ Promise.disableSynchronous = function() {
   Promise.prototype.getState = undefined;
 };
 
-},{"./core.js":38}],45:[function(require,module,exports){
+},{"./core.js":39}],46:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
