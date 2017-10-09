@@ -2,12 +2,16 @@
   font-family: 'Sketch';
   src: local("HelloEtchASketch.ttf"), url("HelloEtchASketch.ttf") format("truetype"); }
 body {
-  background-color: #f2f2f2; }
+  background-color: #f2f2f2;
+  color: #333; }
 
 h1 {
   font-family: 'Sketch';
   font-size: 80px;
   font-weight: 400; }
+
+.text-center {
+  text-align: center; }
 
 .images .concept-name {
   font-size: 48px; }

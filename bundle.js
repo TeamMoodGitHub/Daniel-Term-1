@@ -41,30 +41,30 @@ const app = new Clarifai.App({
 //   }
 // );
 
-// Search by concept
-let conceptName = 'kolder';
+// // Search by concept
+// let conceptName = 'kolder';
 
-app.inputs.search({ concept: {name: conceptName} }).then(
-  function(response) {
+// app.inputs.search({ concept: {name: conceptName} }).then(
+//   function(response) {
 
-    $('<div class="concept-name"><h1>'+conceptName+'</h1></div>').appendTo($('.images')); // Add Concept Name
+//     $('<div class="concept-name"><h1>'+conceptName+'</h1></div>').appendTo($('.images')); // Add Concept Name
 
-    for ( i = 0; i < response.hits.length; i++ ) {
-      var imageUrl = response.hits[i].input.data.image.url;
-      var matchScore = Number((response.hits[i].score * 100).toFixed(2));
-      // console.log(imageUrl);
-      // console.log(matchScore);
+//     for ( i = 0; i < response.hits.length; i++ ) {
+//       var imageUrl = response.hits[i].input.data.image.url;
+//       var matchScore = Number((response.hits[i].score * 100).toFixed(2));
+//       // console.log(imageUrl);
+//       // console.log(matchScore);
 
-      $('<div class="image-block"><img src="'+imageUrl+'"/><span>'+matchScore+'</span></div>').appendTo($('.images')); // Add image divs to body
-    }
+//       $('<div class="image-block"><img src="'+imageUrl+'"/><span>'+matchScore+'</span></div>').appendTo($('.images')); // Add image divs to body
+//     }
 
-  },
+//   },
 
-  function(err) {
-    console.log("Error");
-  }
+//   function(err) {
+//     console.log("Error");
+//   }
 
-);
+// );
 
 // Train
 // Concepts

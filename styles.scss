@@ -1,3 +1,4 @@
+// Global
 @font-face {
   font-family: 'Sketch';
   src: local('HelloEtchASketch.ttf'), url('HelloEtchASketch.ttf') format('truetype');
@@ -5,6 +6,7 @@
 
 body {
   background-color: #f2f2f2;
+  color: #333;
 }
 
 h1 {
@@ -13,6 +15,10 @@ h1 {
   font-weight: 400;
 }
 
+// Single class definitions
+.text-center { text-align: center; }
+
+// Element styles
 .images {
   .concept-name { font-size: 48px; }
 
