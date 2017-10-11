@@ -79,5 +79,3 @@ $(document).ready(function() {
 
   });
 });
-
-// https://scontent-sjc2-1.cdninstagram.com/t51.2885-15/s750x750/sh0.08/e35/22159398_296986807447180_3520779404873564160_n.jpg
