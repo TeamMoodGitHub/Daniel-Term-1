@@ -1,28 +1,23 @@
 @font-face {
-  font-family: 'Sketch';
-  src: local("HelloEtchASketch.ttf"), url("HelloEtchASketch.ttf") format("truetype"); }
+  font-family: 'Roboto', sans-serif;
+  font-family: 'Abril Fatface', cursive; }
 body {
+  font-family: 'Roboto', Helvetica, Arial, sans-serif;
   background-color: #f2f2f2;
   color: #333; }
 
-h1 {
-  font-family: 'Sketch';
-  font-size: 80px;
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Abril Fatface', cursive;
   font-weight: 400; }
+
+h1 {
+  font-size: 80px; }
 
 .text-center {
   text-align: center; }
 
-.images .concept-name {
-  font-size: 48px; }
-.images .image-block {
+.input label, .input form {
   display: inline-block; }
-  .images .image-block img {
-    display: block;
-    width: 200px; }
-  .images .image-block span {
-    font-size: 18px;
-    text-align: left; }
 
 .results-card {
   width: 800px;
@@ -59,6 +54,17 @@ h1 {
     font-weight: 600;
     color: #fff;
     flex-grow: 1; }
+
+.images .concept-name {
+  font-size: 48px; }
+.images .image-block {
+  display: inline-block; }
+  .images .image-block img {
+    display: block;
+    width: 200px; }
+  .images .image-block span {
+    font-size: 18px;
+    text-align: left; }
 
 #instafeed img {
   width: 200px; }
