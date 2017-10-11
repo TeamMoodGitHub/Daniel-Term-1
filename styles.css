@@ -8,19 +8,22 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Abril Fatface', cursive;
-  font-weight: 400; }
+  font-weight: 400;
+  margin: 0; }
 
 h1 {
   font-size: 80px; }
 
-.text-center {
-  text-align: center; }
+header {
+  margin-bottom: 40px; }
 
 .input label, .input form {
-  display: inline-block; }
+  display: inline-block;
+  font-size: 13px; }
 
 .results-card {
-  width: 800px;
+  width: 100%;
+  max-width: 800px;
   margin: 0 auto;
   background-color: #fff;
   overflow: hidden;
@@ -28,7 +31,10 @@ h1 {
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap; }
+  flex-wrap: nowrap;
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s linear 0.5s, opacity 0.5s ease 1s, transform 0.5s ease 1s; }
   .results-card .results-image, .results-card .results {
     flex-grow: 1; }
   .results-card .results-image {
@@ -36,7 +42,10 @@ h1 {
     .results-card .results-image img {
       width: 100%; }
   .results-card .results {
-    padding: 40px; }
+    padding: 20px; }
+    .results-card .results .result {
+      padding: 10px 20px;
+      border-radius: 3px; }
     .results-card .results .result-name {
       font-weight: 600; }
 
@@ -45,7 +54,8 @@ h1 {
   margin: 0 auto;
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap; }
+  flex-wrap: nowrap;
+  transition: visibility 0s linear 0.75s, opacity 0.5s ease 1.25s, transform 0.5s ease 1.25s; }
   .color-palette .color-tile {
     padding: 20px;
     margin: 20px 10px;
@@ -54,6 +64,36 @@ h1 {
     font-weight: 600;
     color: #fff;
     flex-grow: 1; }
+    .color-palette .color-tile:first-of-type {
+      margin-left: 0; }
+    .color-palette .color-tile:last-of-type {
+      margin-right: 0; }
+
+@media only screen and (max-width: 721px) {
+  .results-card {
+    flex-direction: column; }
+    .results-card .results-image {
+      width: 100%; }
+
+  .color-palette {
+    flex-direction: column; }
+    .color-palette .color-tile {
+      margin-bottom: 0;
+      margin-left: 0;
+      margin-right: 0;
+      padding: 10px; } }
+.text-center {
+  text-align: center; }
+
+.hidden {
+  visibility: hidden;
+  opacity: 0; }
+
+.display-none {
+  display: none; }
+
+.slide-up {
+  transform: translateY(20px); }
 
 .images .concept-name {
   font-size: 48px; }

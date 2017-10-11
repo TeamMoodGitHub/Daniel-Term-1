@@ -7,7 +7,10 @@
   </head>
 
   <body>
-    <h1 class="text-center">Moodifai</h1>
+    <header class="text-center">
+        <h1>Moodifai</h1>
+        <p>Let AI read the mood of your photo :)</p>
+    </header>
 
     <div class="input text-center">
       <label>Enter URL:</label>
@@ -17,18 +20,12 @@
       </form>
     </div>
 
-    <div class="results-card">
+    <div class="results-card hidden slide-up">
       <div class="results-image"></div>
       <div class="results"></div>
     </div>
 
-    <div class="color-palette"></div>
-
-    <div class="images"></div>
-
-    <!--
-    <div id="instafeed"></div>
-    //-->
+    <div class="color-palette hidden slide-up"></div>
 
     <!-- Scripts -->
     <script type="text/javascript" src="https://sdk.clarifai.com/js/clarifai-latest.js"></script>

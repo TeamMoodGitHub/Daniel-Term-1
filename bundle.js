@@ -32,6 +32,11 @@ $(document).ready(function() {
     console.log(imageUrl);
     // $('<div>'+imageUrl+'</div>').appendTo($('.results-card'));
 
+    // Hide states
+    $('.results-card').removeClass('hidden').removeClass('slide-up');
+    $('.color-palette').removeClass('hidden').removeClass('slide-up');
+    $('.input').addClass('display-none');
+
     // Try to run predict on the input
     app.models.predict("instagrammers", [imageUrl]).then(
       function(response) {

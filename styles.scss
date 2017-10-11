@@ -1,4 +1,5 @@
 // Global
+// ----------------------------------------------
 @font-face {
   font-family: 'Roboto', sans-serif;
   font-family: 'Abril Fatface', cursive;
@@ -13,21 +14,29 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Abril Fatface', cursive;
   font-weight: 400;
+  margin: 0;
 }
 
 h1 { font-size: 80px; }
 
-// Single class definitions
-.text-center { text-align: center; }
-
 // Element styles
+// ----------------------------------------------
 
+// Header
+header { margin-bottom: 40px }
+
+// URL input field
 .input {
-  label, form { display: inline-block; }
+  label, form {
+    display: inline-block;
+    font-size: 13px;
+  }
 }
 
+// Results card
 .results-card {
-  width: 800px;
+  width: 100%;
+  max-width: 800px;
   margin: 0 auto;
   background-color: #fff;
   overflow: hidden;
@@ -38,6 +47,10 @@ h1 { font-size: 80px; }
   flex-direction: row;
   flex-wrap: nowrap;
 
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s linear 0.5s, opacity 0.5s ease 1s, transform 0.5s ease 1s;
+
   .results-image, .results { flex-grow: 1; }
 
   .results-image {
@@ -46,18 +59,27 @@ h1 { font-size: 80px; }
   }
 
   .results {
-    padding: 40px;
+    padding: 20px;
+
+    .result {
+      padding: 10px 20px;
+      border-radius: 3px;
+    }
+
     .result-name { font-weight: 600; }
   }
 }
 
+// Color pallette tiles
 .color-palette {
   max-width: 800px;
   margin: 0 auto;
-  
+
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
+
+  transition: visibility 0s linear 0.75s, opacity 0.5s ease 1.25s, transform 0.5s ease 1.25s;
 
   .color-tile {
     padding: 20px;
@@ -68,10 +90,48 @@ h1 { font-size: 80px; }
     color: #fff;
 
     flex-grow: 1;
+
+    &:first-of-type { margin-left: 0; }
+    &:last-of-type { margin-right: 0; }
   }
 }
 
+// Media queries
+// ----------------------------------------------
+
+// Mobile
+@media only screen and (max-width : 721px) {
+  .results-card {
+    flex-direction: column;
+    .results-image { width: 100%; }
+  }
+
+  .color-palette {
+    flex-direction: column;
+    .color-tile {
+      margin-bottom: 0;
+      margin-left: 0;
+      margin-right: 0;
+      padding: 10px;
+    }
+  }
+}
+
+// Single class definitions
+// ----------------------------------------------
+.text-center { text-align: center; }
+.hidden {
+  visibility: hidden;
+  opacity: 0;
+}
+.display-none { display: none; }
+
+// Animations
+// ----------------------------------------------
+.slide-up { transform: translateY(20px); }
+
 // Deprecated
+// ----------------------------------------------
 .images {
   .concept-name { font-size: 48px; }
 
