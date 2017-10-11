@@ -31,22 +31,26 @@ $(document).ready(function() {
     console.log(imageUrl);
     // $('<div>'+imageUrl+'</div>').appendTo($('.results-card'));
 
-    // Hide states
+    // Card states
     $('.results-card').removeClass('hidden').removeClass('slide-up');
     $('.color-palette').removeClass('hidden').removeClass('slide-up');
     $('.input').addClass('display-none');
+    $('<img src="'+imageUrl+'"/>').appendTo($('.results-image'));
 
     // Try to run predict on the input
-    app.models.predict("instagrammers", [imageUrl]).then(
+    app.models.predict("processing", [imageUrl]).then(
       function(response) {
-        $('<img src="'+imageUrl+'"/>').appendTo($('.results-image'));
-
         var concepts = response.outputs[0].data.concepts;
 
+        // Loop render the results
         for ( i = 0; i < concepts.length; i++ ) {
           console.log(concepts[i].name);
-          console.log(concepts[i].value * 100);
-          $('<div class="result"><span class="result-name">'+concepts[i].name+': </span>'+concepts[i].value * 100+'</div>').appendTo($('.results'));
+          console.log(concepts[i].value);
+          if ( concepts[i].value * 100 > .01 ) {
+            $('<div class="result"><span class="result-name">'+concepts[i].name+': </span>'+concepts[i].value * 100+'</div>').appendTo($('.results'));
+          } else {
+            return false;
+          }
         }
       },
       function(err) {
@@ -60,6 +64,7 @@ $(document).ready(function() {
         console.log(response);
         var colors = response.outputs[0].data.colors;
 
+        // Loop render the results
         for ( i = 0; i < colors.length; i++ ) {
           var colorHex = colors[i].w3c.hex;
           var colorName = colors[i].w3c.name;

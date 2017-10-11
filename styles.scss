@@ -13,11 +13,13 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Abril Fatface', cursive;
+  letter-spacing: 1px;
   font-weight: 400;
   margin: 0;
 }
 
 h1 { font-size: 80px; }
+h3 { font-size: 36px; }
 
 // Element styles
 // ----------------------------------------------
@@ -59,14 +61,8 @@ header { margin-bottom: 40px }
   }
 
   .results {
-    padding: 20px;
-
-    .result {
-      padding: 10px 20px;
-      border-radius: 3px;
-    }
-
-    .result-name { font-weight: 600; }
+    padding: 40px;
+    h3, .result { padding: 10px 0; }
   }
 }
 

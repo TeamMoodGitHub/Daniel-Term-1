@@ -8,11 +8,15 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Abril Fatface', cursive;
+  letter-spacing: 1px;
   font-weight: 400;
   margin: 0; }
 
 h1 {
   font-size: 80px; }
+
+h3 {
+  font-size: 36px; }
 
 header {
   margin-bottom: 40px; }
@@ -42,12 +46,9 @@ header {
     .results-card .results-image img {
       width: 100%; }
   .results-card .results {
-    padding: 20px; }
-    .results-card .results .result {
-      padding: 10px 20px;
-      border-radius: 3px; }
-    .results-card .results .result-name {
-      font-weight: 600; }
+    padding: 40px; }
+    .results-card .results h3, .results-card .results .result {
+      padding: 10px 0; }
 
 .color-palette {
   max-width: 800px;
